@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +29,7 @@ public class GUI extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 		}
+
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
@@ -39,9 +41,13 @@ public class GUI extends JFrame {
 			repaint();
 		}
 	}
+
+	private static final Logger logger = Logger.getLogger(GUI.class.getName());
 	private final SomePanel drawingPanel = new SomePanel();
 	private int expectedClusters = 6;
 	private FlameClusterer flameClusterer = null;
+	private int flameNeighbours = 10;
+	private int flameIterations = 100;
 	private FCMPointsClusterer fmcClusterer = null;
 	private double fuzzifier = 2.0;
 
@@ -70,27 +76,39 @@ public class GUI extends JFrame {
 		// add(iterationsSlider, BorderLayout.EAST);
 		pack();
 		setVisible(true);
+		logger.info("GUI initialized.");
 	}
 
-	private void getNewFmcParams() {
+	private void setupParams() {
+		final JSpinner neighboursField = new JSpinner(new SpinnerNumberModel(
+				flameIterations, 1, Integer.MAX_VALUE, 1));
+		final JSpinner iterationsField = new JSpinner(new SpinnerNumberModel(
+				flameNeighbours, 1, Integer.MAX_VALUE, 1));
 		final JSpinner cField = new JSpinner(new SpinnerNumberModel(
 				expectedClusters, 2, Integer.MAX_VALUE, 1));
 		final JSpinner mField = new JSpinner(new SpinnerNumberModel(fuzzifier,
 				1.001, 100.0, 0.001));
-		final Object[] params = {
-				new JLabel("Number of clusters in Fuzzy C Means:"), cField,
-				new JLabel("Fuzzying parameter (any real > 1):"), mField };
+		final Object[] params = { new JLabel("FLAME neighbours:"),
+				neighboursField, new JLabel("FLAME iterations"),
+				iterationsField,
+				new JLabel("Fuzzy C Means number of clusters:"), cField,
+				new JLabel("Fuzzy C Means Fuzzying parameter (any real > 1):"),
+				mField };
 		// show panel
 		final int d = JOptionPane.showConfirmDialog(drawingPanel, params,
-				"Fuzzy C Means parameters:", JOptionPane.OK_CANCEL_OPTION);
+				"Parameters:", JOptionPane.OK_CANCEL_OPTION);
 		// show confirmation and set params
 		if (d == 0) {
+			flameNeighbours = (Integer) neighboursField.getValue();
+			flameIterations = (Integer) iterationsField.getValue();
 			expectedClusters = (Integer) cField.getValue();
 			fuzzifier = (Double) mField.getValue();
 			String message = String.format("New parameters:\n"
+					+ "FLAME neighbours = %d" + "FLAME iterations = %d"
 					+ "Number of clusters in Fuzzy C Means: = %d\n"
 					+ "Fuzzying parameter (any real > 1): = %f\n",
-					expectedClusters, fuzzifier);
+					flameNeighbours, flameIterations, expectedClusters,
+					fuzzifier);
 			JOptionPane.showMessageDialog(null, message);
 		}
 	}
@@ -107,32 +125,38 @@ public class GUI extends JFrame {
 			runFuzzyC();
 			break;
 		case KeyEvent.VK_S:
-			newFmcClusterer();
+			resetFuzzyC();
 			break;
 		case KeyEvent.VK_R:
-			getNewFmcParams();
+			setupParams();
 			break;
 		}
 		drawingPanel.repaint();
 	}
 
-	private void newFmcClusterer() {
+	private void resetFuzzyC() {
 		fmcClusterer = new FCMPointsClusterer(points, expectedClusters,
 				fuzzifier);
 	}
 
 	private void runFlame() {
+		logger.info("Starting FLAME clustering.");
+		logger.info(() -> String.format(
+				"Parameters:\nNeighbours: %d\nIterations: %d", flameNeighbours,
+				flameIterations));
 		try {
-			flameClusterer = new FlameClusterer(points, 15, 100);
+			flameClusterer = new FlameClusterer(points, flameNeighbours,
+					flameIterations);
 			flameClusterer.execute();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		logger.info("Finished FLAME clustering.");
 	}
 
 	private void runFuzzyC() {
 		try {
-			newFmcClusterer();
+			resetFuzzyC();
 			fmcClusterer.execute();
 		} catch (Exception ex) {
 			ex.printStackTrace();

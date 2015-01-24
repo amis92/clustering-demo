@@ -48,16 +48,23 @@ public class FCMPointsClusterer {
 	}
 
 	public void execute() {
+		logger.info("Starting Fuzzy C Means clustering");
+		logger.info(() -> String
+				.format("Parameters:\nclusters c = %d\nfuzzifier m = %f\nPoints to cluster: %d",
+						c, m, points.size()));
 		FuzzyCMeansClusterer clusterer = new FuzzyCMeansClusterer(patterns, c,
 				m);
 		clusterer.partition();
+		logger.info("Clustering finished. Generating colours...");
 		Color[] clusterColors = generateColours();
+		logger.info("Colours generated. Assigning colours to dots.");
 		double[][] mm = clusterer.getMembershipMatrix().matrix;
 		for (int i = 0; i < mm.length; i++) {
 			int clusterIndex = getHighestMembership(mm[i]);
 			Point p = points.get(i);
 			p.color = clusterColors[clusterIndex];
 		}
+		logger.info("Colours assigned. Algorithm finished.");
 	}
 
 	/**
@@ -90,9 +97,9 @@ public class FCMPointsClusterer {
 		logger.info("nadawanie kolorow");
 		Color[] clusterColors = new Color[c];
 		Random random = new Random();
-		float delta = 1.0f / ((float)c);
+		float delta = 1.0f / ((float) c);
 		for (int i = 0; i < c; ++i) {
-			float h = ((float)i) * delta;
+			float h = ((float) i) * delta;
 			float s = 0.9f + random.nextFloat() * 0.1f;
 			float b = 0.6f + random.nextFloat() * 0.1f;
 			clusterColors[i] = Color.getHSBColor(h, s, b);
