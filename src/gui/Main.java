@@ -6,11 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Logger;
+
+import javax.swing.UIManager;
 
 import clusterer.Point;
 
 public class Main 
 {
+	private static final Logger logger = Logger.getLogger(Main.class.getName());
 	public static void main(String[] args)
 	{
 		
@@ -31,7 +35,16 @@ public class Main
 			e.printStackTrace();
 		}	
 		
-		
+
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (Exception e)
+        {
+            // we can live without system L&F
+            logger.info("Failed to set System L&F");
+        }
 		GUI gui = new GUI();
 		points.clear();
 		
