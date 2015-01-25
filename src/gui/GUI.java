@@ -145,9 +145,9 @@ public class GUI extends JFrame {
 
 	private void setupParams() {
 		final JSpinner neighboursField = new JSpinner(new SpinnerNumberModel(
-				flameIterations, 1, Integer.MAX_VALUE, 1));
-		final JSpinner iterationsField = new JSpinner(new SpinnerNumberModel(
 				flameNeighbours, 1, Integer.MAX_VALUE, 1));
+		final JSpinner iterationsField = new JSpinner(new SpinnerNumberModel(
+				flameIterations, 1, Integer.MAX_VALUE, 1));
 		final JSpinner cField = new JSpinner(new SpinnerNumberModel(
 				fuzzyClusters, 2, Integer.MAX_VALUE, 1));
 		final JSpinner mField = new JSpinner(new SpinnerNumberModel(fuzzyM,

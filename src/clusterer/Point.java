@@ -112,7 +112,7 @@ public class Point {
 
 		// wyszukuje dominujace CSO dla standardowych punktow
 		double maxMembership = -1d;
-		boolean isOutlier = false;
+		/* boolean isOutlier = false;
 		for (int i = 0; i < clusterMemberships.size(); i++) {
 			Pair<Point, Double> pointInfo = this.clusterMemberships.get(i);
 			if (pointInfo.second > maxMembership) {
@@ -121,11 +121,12 @@ public class Point {
 				if (i == clusterMemberships.size() - 1)
 					isOutlier = true;
 			}
-		}
+		} */
 		
 		
 		maxMembership = -1d;
 		for (Pair<Point,Double> pair : clusterMemberships) {
+			if(pair.first == null) break;
 			if(pair.second == Double.NaN)
 				try {
 					throw new Exception("");
@@ -136,8 +137,8 @@ public class Point {
 			if(pair.second>maxMembership){
 				dominatingCSO = pair.first;
 				maxMembership = pair.second;
-				if(pair.first==null)
-					type=Type.OUTLIER;
+				//if(pair.first==null)
+					//type=Type.OUTLIER;
 			}
 		}
 
