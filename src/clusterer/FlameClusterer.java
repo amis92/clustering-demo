@@ -17,10 +17,7 @@ public class FlameClusterer
 	
 	public FlameClusterer(ArrayList<Point> points, int k, int steps) throws Exception
 	{	
-		if(k>= points.size()){
-			throw new Exception("liczba sasiadow jest wieksza lub rowna ilosci wszystkich punktow");
-		}
-		
+
 		this.points = points;
 		this.k = k;
 		this.steps = steps;
@@ -42,6 +39,11 @@ public class FlameClusterer
 	
 	public void execute() {
 		
+		if(k>= points.size()){
+			System.err.println("liczba sasiadow jest wieksza lub rowna ilosci wszystkich punktow");
+			return;
+		}
+		
 		
 		System.out.println("szukanie sasiadow i wyliczenie najwiekszego dystansu");
 		double maxDistance =-1; 
@@ -51,7 +53,7 @@ public class FlameClusterer
 				dst = point.findClosestNeighbors(points, k);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			if(dst > maxDistance)
 				maxDistance = dst;
@@ -112,7 +114,10 @@ public class FlameClusterer
 		for (Point point : points) {	
 			if(point.type == Type.STANDARD){
 				for(Point CSO : CSOs) {
-					point.clusterMemberships.add(new Pair<Point, Double>(CSO, 1d/(1d+CSOs.size())));	//@TODO inicjalna przynaleznosc jest zalezna od liczby CSO
+					double membershipValue = 1d/(1d+CSOs.size());
+					if(membershipValue == Double.NaN)
+						throw new ArithmeticException("wartosc jej nan");
+					point.clusterMemberships.add(new Pair<Point, Double>(CSO, membershipValue));	//@TODO inicjalna przynaleznosc jest zalezna od liczby CSO
 				}
 				point.clusterMemberships.add(new Pair<Point, Double>(null, 1d/(1d+CSOs.size())));	//null symbolizuje grupe outlierow
 			}
@@ -141,6 +146,13 @@ public class FlameClusterer
 			assignMembershipValues();
 		}
 		
+		//sprawdzenie czy dobrze dodalo wartosci membershipow
+		for (Point point : points) {
+			for (Pair<Point, Double> membership : point.clusterMemberships) {
+				if(membership.second == Double.NaN)
+					throw new ArithmeticException("wartosc jej nan");
+			}
+		}	
 		
 		System.out.println("przydzielanie do klastrow");
 		for (Point point : points) {	
@@ -174,6 +186,8 @@ public class FlameClusterer
 				}
 				point.color =domintatingCSOColor;
 			}
+			else if(point.type == Type.OUTLIER)
+				point.color = new Color(255,255,255);
 		}
 		
 		

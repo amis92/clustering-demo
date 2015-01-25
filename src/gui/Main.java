@@ -6,11 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Logger;
+
+import javax.swing.UIManager;
 
 import clusterer.Point;
 
 public class Main 
 {
+	private static final Logger logger = Logger.getLogger(Main.class.getName());
 	public static void main(String[] args)
 	{
 		
@@ -28,10 +32,19 @@ public class Main
 			fileReader.close();
 			System.out.println("zakonczono wczytywanie pliku\n\n");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("niepowodzenie w otwarciu pliku");
 		}	
 		
-		
+
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (Exception e)
+        {
+            // we can live without system L&F
+            logger.info("Failed to set System L&F");
+        }
 		GUI gui = new GUI();
 		points.clear();
 		
@@ -48,7 +61,7 @@ public class Main
 		for(int i=0; i<400; ++i) {
 			Point p = new Point(
 				Math.abs((int)(random.nextGaussian() * 1280d)) %500+500,
-				Math.abs((int)(random.nextGaussian() * 768d)) %300+500
+				Math.abs((int)(random.nextGaussian() * 768d))%300+500
 			);
 			points.add(p);
 		}
