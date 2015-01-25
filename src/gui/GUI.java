@@ -58,9 +58,9 @@ public class GUI extends JFrame {
 	private final MouseAdapter mouseListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
-			points.add(new Point(arg0.getXOnScreen() - 0,
-					arg0.getYOnScreen() - 28));
-			drawingPanel.repaint();
+			//points.add(new Point(arg0.getXOnScreen() - 0,
+			//		arg0.getYOnScreen() - 28));
+			//drawingPanel.repaint();
 		}
 	};
 

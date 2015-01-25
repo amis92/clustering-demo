@@ -108,6 +108,7 @@ public class Point {
 			this.dominatingCSO = this;
 			return;
 		}
+		else dominatingCSO = null;
 
 		// wyszukuje dominujace CSO dla standardowych punktow
 		double maxMembership = -1d;
@@ -121,14 +122,32 @@ public class Point {
 					isOutlier = true;
 			}
 		}
+		
+		
+		maxMembership = -1d;
+		for (Pair<Point,Double> pair : clusterMemberships) {
+			if(pair.second == Double.NaN)
+				try {
+					throw new Exception("");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if(pair.second>maxMembership){
+				dominatingCSO = pair.first;
+				maxMembership = pair.second;
+				if(pair.first==null)
+					type=Type.OUTLIER;
+			}
+		}
 
-		if (dominatingCSO == null && isOutlier == false)
+		if (dominatingCSO == null)
 			try {
 				throw new Exception(
 						"nie udalo sie przydzielic zadnego CSO dla standrdowego punktu");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 	}
 

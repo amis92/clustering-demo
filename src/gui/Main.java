@@ -32,7 +32,7 @@ public class Main
 			fileReader.close();
 			System.out.println("zakonczono wczytywanie pliku\n\n");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("niepowodzenie w otwarciu pliku");
 		}	
 		
 
@@ -61,7 +61,7 @@ public class Main
 		for(int i=0; i<400; ++i) {
 			Point p = new Point(
 				Math.abs((int)(random.nextGaussian() * 1280d)) %500+500,
-				Math.abs((int)(random.nextGaussian() * 768d)) %300+500
+				Math.abs((int)(random.nextGaussian() * 768d))%300+500
 			);
 			points.add(p);
 		}
